@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>isw-snackbar test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../isw-snackbar.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+        <isw-snackbar></isw-snackbar>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('isw-snackbar', function() {
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          assert.equal(element.is, 'isw-snackbar');
+        });
+      });
+    </script>
+  </body>
+</html>
