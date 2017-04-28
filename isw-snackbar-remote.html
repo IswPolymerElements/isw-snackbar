@@ -1,0 +1,33 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`isw-snackbar`
+Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-control.
+
+@demo demo/index.html
+-->
+
+<dom-module id="isw-snackbar-remote">
+	<script>
+		class IswSnackbarRemote extends Polymer.Element {
+			static get is() {
+				return 'isw-snackbar-remote';
+			}
+
+			static get properties() {
+				return {
+					message: {
+						type: String,
+						notify: true
+					}
+				};
+			}
+
+			open() {
+				document.dispatchEvent( new CustomEvent( 'isw-snackbar-open', { detail: { message: this.message } } ) );
+			}
+		}
+
+		window.customElements.define( IswSnackbarRemote.is, IswSnackbarRemote );
+	</script>
+</dom-module>

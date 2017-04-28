@@ -1,5 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+
 <!--
 `isw-snackbar`
 Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-control.
@@ -8,28 +10,85 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 -->
 
 <dom-module id="isw-snackbar">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[prop1]]</h2>
-  </template>
+	<template>
+		<style>
+			:host {
+				@apply --layout-vertical;
+				@apply --layout-center;
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
 
-  <script>
-    class MyElement extends Polymer.Element {
-      static get is() { return 'isw-snackbar'; }
-      static get properties() {
-        return {
-          prop1: {
-            type: String,
-            value: 'isw-snackbar'
-          }
-        };
-      }
-    }
+			#snackbar {
+				@apply --layout-horizontal;
+				@apply --layout-center;
+				box-sizing: border-box;
+				min-width: 100%;
+				min-height: 48px;
+				padding: 14px 0;
+				background: #323232;
+				color: var(--dark-theme-text-color);
+			}
 
-    window.customElements.define(MyElement.is, MyElement);
-  </script>
+			:host([device="tablet"]) #snackbar,
+			:host([device="desktop"]) #snackbar {
+				max-width: 568px;
+				min-width: 288px;
+				border-radius: 2px;
+			}
+
+			#message {
+				margin: 0 24px;
+				font-size: 14px;
+			}
+		</style>
+
+		<div id="snackbar">
+			<div id="message">
+				<span>[[message]]</span>
+			</div>
+		</div>
+	</template>
+
+	<script>
+		class IswSnackbar extends Polymer.Element {
+			static get is() {
+				return 'isw-snackbar';
+			}
+
+			static get properties() {
+				return {
+					message: {
+						type: String,
+						notify: true
+					},
+					/**
+					 * The device metrics that should be used. Either "mobile", "tablet" or "desktop".
+					 * Combine with isw-responsive-behavior for a responsive snackbar.
+					 */
+					device: {
+						type: String,
+						notify: true,
+						reflectToAttribute: true,
+						value: 'mobile'
+					}
+				};
+			}
+
+			ready() {
+				super.ready();
+
+				// Listen to remote 'isw-snackbar-action' events.
+				document.addEventListener('isw-snackbar-open', e => this._remoteOpen( e ));
+			}
+
+			_remoteOpen( event ) {
+				this.set( 'message', event.detail.message );
+			}
+		}
+
+		window.customElements.define( IswSnackbar.is, IswSnackbar );
+	</script>
 </dom-module>

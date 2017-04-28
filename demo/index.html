@@ -1,28 +1,171 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>isw-snackbar demo</title>
+	<title>isw-responsive-behavior demo</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+	<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../isw-snackbar.html">
+	<link rel="import" href="../../app-layout/app-layout.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
-  </head>
-  <body>
-    <div class="vertical-section-container centered">
-      <h3>Basic isw-snackbar demo</h3>
-      <demo-snippet>
-        <template>
-          <isw-snackbar></isw-snackbar>
-        </template>
-      </demo-snippet>
-    </div>
-  </body>
+	<link rel="import" href="../../iron-icons/iron-icons.html">
+	<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+
+	<link rel="import" href="../../paper-button/paper-button.html">
+	<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+	<link rel="import" href="../../paper-styles/paper-styles.html">
+
+	<link rel="import" href="../../isw-footer-button-area/isw-footer-button-area.html">
+	<link rel="import" href="../../isw-responsive-behavior/isw-responsive-behavior.html">
+	<link rel="import" href="../../isw-toolbar/isw-toolbar.html">
+
+	<link rel="import" href="../isw-snackbar.html">
+	<link rel="import" href="../isw-snackbar-remote.html">
+</head>
+
+<body>
+<dom-module id="demo-element-view">
+	<template>
+		<style>
+			:host {
+				font-family: 'Roboto', 'Noto', sans-serif;
+				line-height: 1.5;
+				background-color: #FFFFFF;
+				--primary-color: #00508C;
+				--accent-color: var(--paper-light-green-500);
+			}
+
+			#drawer {
+				background-color: #DDDDDD;
+				height: 100%;
+			}
+
+			#main {
+				@apply --layout-fit;
+				@apply --layout-vertical;
+			}
+
+			#content {
+				@apply --layout-flex;
+				@apply --layout-scroll;
+				padding: 40px 80px;
+			}
+
+			:host([device="mobile"]) #content {
+				padding: 24px 72px;
+			}
+
+			paper-button {
+				font-weight: 500;
+			}
+
+			paper-button[raised] {
+				background: var(--primary-color);
+				color: var(--dark-theme-text-color);
+			}
+
+			:host([device="mobile"]) paper-button {
+				font-size: 14px;
+				height: 36px;
+				margin: 0 8px;
+			}
+
+			#menuButton {
+				display: none;
+			}
+
+			:host([drawer-force-narrow]) #menuButton {
+				display: block;
+			}
+		</style>
+
+		<app-drawer-layout responsive-width="0" force-narrow="[[drawerForceNarrow]]" fullbleed>
+
+			<app-drawer slot="drawer">
+				<div id="drawer"></div>
+			</app-drawer>
+
+			<div id="main">
+				<isw-toolbar rows="2" device="[[device]]" orientation="[[orientation]]">
+					<paper-icon-button id="menuButton" slot="nav-icon" icon="menu" drawer-toggle></paper-icon-button>
+					<span slot="middle">Snackbar / Toast</span>
+					<paper-icon-button slot="action-icon" icon="search"></paper-icon-button>
+					<paper-icon-button slot="action-icon" icon="more-vert"></paper-icon-button>
+				</isw-toolbar>
+
+				<div id="content">
+
+					<paper-button raised on-tap="_snackbarA">Snackbar A</paper-button>
+					<paper-button raised on-tap="_snackbarB">Snackbar B</paper-button>
+
+					<isw-snackbar-remote id="snackbarA" message="Snackbar A"></isw-snackbar-remote>
+					<isw-snackbar-remote id="snackbarB" message="Snackbar B fdsafdskla dsföalds fjsdjfk jsdflöja sdkfjödasfjlöa"></isw-snackbar-remote>
+
+				</div>
+
+				<isw-footer-button-area>
+					<paper-button>Some</paper-button>
+					<paper-button>Buttons</paper-button>
+				</isw-footer-button-area>
+			</div>
+
+		</app-drawer-layout>
+
+		<isw-snackbar device="[[device]]"></isw-snackbar>
+
+	</template>
+
+	<script>
+		HTMLImports.whenReady( function() {
+			class DemoElementView extends Polymer.mixinBehaviors( [ iswResponsiveBehavior ], Polymer.Element ) {
+				static get is() {
+					return 'demo-element-view';
+				}
+
+				static get properties() {
+					return {
+						drawerForceNarrow: {
+							type: Boolean,
+							notify: true,
+							reflectToAttribute: true
+						}
+					}
+				}
+
+				onResize() {
+					super.onResize();
+
+					switch( this.device ) {
+						case 'desktop':
+							this.set( 'drawerForceNarrow', false );
+							break;
+
+						case 'tablet':
+							this.set( 'drawerForceNarrow', this.orientation == 'portrait' );
+							break;
+
+						default:
+							this.set( 'drawerForceNarrow', true );
+					}
+				}
+
+				_snackbarA() {
+					this.$.snackbarA.open();
+				}
+
+				_snackbarB() {
+					this.$.snackbarB.open();
+				}
+
+			}
+			window.customElements.define( DemoElementView.is, DemoElementView );
+		} );
+	</script>
+</dom-module>
+
+<demo-element-view></demo-element-view>
+
+</body>
 </html>
