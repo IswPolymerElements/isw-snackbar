@@ -14,10 +14,9 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 	<template>
 		<style>
 			:host {
-				@apply --layout-vertical;
-				@apply --layout-center;
 				position: absolute;
-				display: flex !important;
+				display: block !important;
+				margin: auto;
 				bottom: 0;
 				left: 0;
 				right: 0;
@@ -40,11 +39,6 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 				animation-duration: 0.2s;
 			}
 
-			@keyframes open {
-				from { bottom: var(--snackbar-hidden-bottom); }
-				to { bottom: 0px; }
-			}
-
 			@keyframes close {
 				from { bottom: 0px; }
 				to { bottom: var(--snackbar-hidden-bottom); }
@@ -54,6 +48,17 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 				bottom: 0px;
 				animation-name: open;
 				animation-duration: 0.2s;
+			}
+
+			@keyframes open {
+				from { bottom: var(--snackbar-hidden-bottom); }
+				to { bottom: 0px; }
+			}
+
+			:host([device="tablet"]),
+			:host([device="desktop"]) {
+				width: var(--snackbar-width);
+				white-space: nowrap;
 			}
 
 			:host([device="tablet"]) #snackbar,
@@ -141,7 +146,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 
 			/**
 			 * Open next message from queue.
- 			 */
+			 */
 			_queueOpen() {
 				// Set message.
 				this.set( 'message', this.queue[ 0 ].message );
@@ -149,6 +154,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 				// Update styles.
 				this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
 				this.updateStyles( { '--snackbar-height': this.$.snackbar.offsetHeight + 'px' } );
+				this.updateStyles( { '--snackbar-width': this.$.snackbar.offsetWidth + 'px' } );
 
 				// Remove now shown message from queue.
 				this.shift( 'queue' );
@@ -207,7 +213,8 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 			_queueClosed() {
 				// Reset snackbar.
 				this.set( 'message', '' );
-				this.updateStyles( { '--snackbar-height': 0 } );
+				this.updateStyles( { '--snackbar-height': undefined } );
+				this.updateStyles( { '--snackbar-width': undefined } );
 
 				if( this.queue.length != 0 ) {
 					// Open the next message in queue.
