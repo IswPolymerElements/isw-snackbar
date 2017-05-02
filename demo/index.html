@@ -100,9 +100,13 @@
 
 					<paper-button raised on-tap="_snackbarA">Snackbar A</paper-button>
 					<paper-button raised on-tap="_snackbarB">Snackbar B</paper-button>
+					<paper-button raised on-tap="_snackbarTwoLine">Snackbar Two Line</paper-button>
+					<paper-button raised on-tap="_snackbarDuration">Snackbar Duration</paper-button>
 
-					<isw-snackbar-remote id="snackbarA" message="Snackbar A"></isw-snackbar-remote>
-					<isw-snackbar-remote id="snackbarB" message="Snackbar B fdsafdskla dsföalds fjsdjfk jsdflöja sdkfjödasfjlöa"></isw-snackbar-remote>
+					<isw-snackbar-remote id="snackbarA" message="Snackbar Test A"></isw-snackbar-remote>
+					<isw-snackbar-remote id="snackbarB" message="Snackbar Test B"></isw-snackbar-remote>
+					<isw-snackbar-remote id="snackbarTwoLine" message="Snackbar Test Lorem ipsum dolor sit amet, consetetur sadipscing elitr"></isw-snackbar-remote>
+					<isw-snackbar-remote id="snackbarDuration" message="Snackbar Test 10 seconds." duration="10000"></isw-snackbar-remote>
 
 				</div>
 
@@ -158,6 +162,14 @@
 
 				_snackbarB() {
 					this.$.snackbarB.open();
+				}
+
+				_snackbarTwoLine() {
+					this.$.snackbarTwoLine.open();
+				}
+
+				_snackbarDuration() {
+					this.$.snackbarDuration.open();
 				}
 
 			}

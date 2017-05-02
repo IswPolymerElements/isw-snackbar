@@ -93,6 +93,10 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 						type: String,
 						notify: true
 					},
+					duration: {
+						type: Number,
+						notify: true
+					},
 					queue: {
 						type: Array,
 						value: []
@@ -150,6 +154,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 			_queueOpen() {
 				// Set message.
 				this.set( 'message', this.queue[ 0 ].message );
+				this.set( 'duration', this.queue[ 0 ].duration );
 
 				// Update styles.
 				this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
@@ -184,7 +189,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 					this._shortWaitingAsync = this.async( this._queueWaited, 600 );
 				} else {
 					// Last message in queue, normal view time.
-					this._waitingAsync = this.async( this._queueWaited, 5000 );
+					this._waitingAsync = this.async( this._queueWaited, this.duration );
 				}
 			}
 
@@ -213,6 +218,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 			_queueClosed() {
 				// Reset snackbar.
 				this.set( 'message', '' );
+				this.set( 'duration', undefined );
 				this.updateStyles( { '--snackbar-height': undefined } );
 				this.updateStyles( { '--snackbar-width': undefined } );
 

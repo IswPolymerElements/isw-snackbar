@@ -19,12 +19,17 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 					message: {
 						type: String,
 						notify: true
+					},
+					duration: {
+						type: Number,
+						notify: true,
+						value: 3000
 					}
 				};
 			}
 
 			open() {
-				document.dispatchEvent( new CustomEvent( 'isw-snackbar-open', { detail: { message: this.message } } ) );
+				document.dispatchEvent( new CustomEvent( 'isw-snackbar-open', { detail: { message: this.message, duration: this.duration } } ) );
 			}
 		}
 
