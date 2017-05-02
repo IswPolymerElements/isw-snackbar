@@ -131,6 +131,9 @@ It can be accessed from multiple remotes.
 						type: Array,
 						value: []
 					},
+					/**
+					 * Override opened from iron-overlay-behavior to add reflectToAttribute for styling.
+					 */
 					opened: {
 						type: Boolean,
 						notify: true,
@@ -182,7 +185,7 @@ It can be accessed from multiple remotes.
 			 * Open next message from queue.
 			 */
 			_queueOpen() {
-				// Set message.
+				// Set message and duration.
 				this.set( 'message', this.queue[ 0 ].message );
 				this.set( 'duration', this.queue[ 0 ].duration );
 
@@ -249,6 +252,8 @@ It can be accessed from multiple remotes.
 				// Reset snackbar.
 				this.set( 'message', '' );
 				this.set( 'duration', undefined );
+
+				// Reset styles.
 				this.updateStyles( { '--snackbar-height': undefined } );
 				this.updateStyles( { '--snackbar-width': undefined } );
 
