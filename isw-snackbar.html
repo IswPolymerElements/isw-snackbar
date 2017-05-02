@@ -125,6 +125,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 			}
 
 			_remoteOpen( event ) {
+				// Add new message from remote to queue.
 				this.push( 'queue', event.detail );
 
 				if( !this._running ) {
@@ -138,44 +139,78 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 			}
 
 
+			/**
+			 * Open next message from queue.
+ 			 */
 			_queueOpen() {
+				// Set message.
 				this.set( 'message', this.queue[ 0 ].message );
-				this.shift( 'queue' );
 
+				// Update styles.
 				this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
 				this.updateStyles( { '--snackbar-height': this.$.snackbar.offsetHeight + 'px' } );
 
+				// Remove now shown message from queue.
+				this.shift( 'queue' );
+
+				// Open the overlay.
 				this.open();
 
+				// Wait for openening animation.
 				this._openingAsync = this.async( this._queueOpened, 200 );
 			}
 
+			/**
+			 * Message opening finished.
+			 */
 			_queueOpened() {
+				// Start waiting.
 				this._queueWait();
 			}
 
 
+			/**
+			 * Start waiting.
+			 */
 			_queueWait() {
 				if( this.queue.length != 0 ) {
+					// If queue is full, hurry up.
 					this._shortWaitingAsync = this.async( this._queueWaited, 600 );
 				} else {
+					// Last message in queue, normal view time.
 					this._waitingAsync = this.async( this._queueWaited, 5000 );
 				}
 			}
 
+			/**
+			 * Message waiting finished.
+			 */
 			_queueWaited() {
+				// Close message.
 				this._queueClose();
 			}
 
-
+			/**
+			 * Close message.
+			 */
 			_queueClose() {
+				// Close the overlay.
 				this.close();
 
+				// Wait for closing animation.
 				this._closingAsync = this.async( this._queueClosed, 200 );
 			}
 
+			/**
+			 * Message closing finished.
+			 */
 			_queueClosed() {
+				// Reset snackbar.
+				this.set( 'message', '' );
+				this.updateStyles( { '--snackbar-height': 0 } );
+
 				if( this.queue.length != 0 ) {
+					// Open the next message in queue.
 					this._queueOpen();
 				} else {
 					this.set( '_running', false );
