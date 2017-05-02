@@ -4,7 +4,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 
 Place your snackbar somewhere save from stacking-context issues, and access it over a remote element in your view.
 
-The snackbar can be switched between "mobile" and "tablet" / "desktop" styling via `device` and responsive gets with isw-responsive-behavior.
+The snackbar can be switched between "mobile" and "tablet" / "desktop" styling via `device` and gets responsive with isw-responsive-behavior.
 
 An open call to an allready opened snackbar closes and opens it again, multiple calls are queued.
 
