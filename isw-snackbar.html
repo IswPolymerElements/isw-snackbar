@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
 
 <!--
 `isw-snackbar`
@@ -16,20 +17,43 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 				@apply --layout-vertical;
 				@apply --layout-center;
 				position: absolute;
+				display: flex !important;
 				bottom: 0;
 				left: 0;
 				right: 0;
+				height: var(--snackbar-height);
+				overflow: hidden;
 			}
 
 			#snackbar {
 				@apply --layout-horizontal;
 				@apply --layout-center;
+				position: absolute;
 				box-sizing: border-box;
 				min-width: 100%;
 				min-height: 48px;
 				padding: 14px 0;
 				background: #323232;
+				bottom: var(--snackbar-hidden-bottom);
 				color: var(--dark-theme-text-color);
+				animation-name: close;
+				animation-duration: 0.2s;
+			}
+
+			@keyframes open {
+				from { bottom: var(--snackbar-hidden-bottom); }
+				to { bottom: 0px; }
+			}
+
+			@keyframes close {
+				from { bottom: 0px; }
+				to { bottom: var(--snackbar-hidden-bottom); }
+			}
+
+			:host([opened]) #snackbar {
+				bottom: 0px;
+				animation-name: open;
+				animation-duration: 0.2s;
 			}
 
 			:host([device="tablet"]) #snackbar,
@@ -53,7 +77,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 	</template>
 
 	<script>
-		class IswSnackbar extends Polymer.Element {
+		class IswSnackbar extends Polymer.mixinBehaviors( [ Polymer.IronOverlayBehavior ], Polymer.Element ) {
 			static get is() {
 				return 'isw-snackbar';
 			}
@@ -64,6 +88,16 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 						type: String,
 						notify: true
 					},
+					queue: {
+						type: Array,
+						value: []
+					},
+					opened: {
+						type: Boolean,
+						notify: true,
+						reflectToAttribute: true,
+						value: false
+					},
 					/**
 					 * The device metrics that should be used. Either "mobile", "tablet" or "desktop".
 					 * Combine with isw-responsive-behavior for a responsive snackbar.
@@ -73,6 +107,10 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 						notify: true,
 						reflectToAttribute: true,
 						value: 'mobile'
+					},
+					_running: {
+						type: Boolean,
+						value: false
 					}
 				};
 			}
@@ -80,12 +118,68 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 			ready() {
 				super.ready();
 
+				this.noCancelOnOutsideClick = true;
+
 				// Listen to remote 'isw-snackbar-action' events.
-				document.addEventListener('isw-snackbar-open', e => this._remoteOpen( e ));
+				document.addEventListener( 'isw-snackbar-open', e => this._remoteOpen( e ) );
 			}
 
 			_remoteOpen( event ) {
-				this.set( 'message', event.detail.message );
+				this.push( 'queue', event.detail );
+
+				if( !this._running ) {
+					this.set( '_running', true );
+					this._queueOpen();
+				} else if( this._waitingAsync !== null ) {
+					this.cancelAsync( this._waitingAsync );
+					this._waitingAsync = null;
+					this._queueClose();
+				}
+			}
+
+
+			_queueOpen() {
+				this.set( 'message', this.queue[ 0 ].message );
+				this.shift( 'queue' );
+
+				this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
+				this.updateStyles( { '--snackbar-height': this.$.snackbar.offsetHeight + 'px' } );
+
+				this.open();
+
+				this._openingAsync = this.async( this._queueOpened, 200 );
+			}
+
+			_queueOpened() {
+				this._queueWait();
+			}
+
+
+			_queueWait() {
+				if( this.queue.length != 0 ) {
+					this._shortWaitingAsync = this.async( this._queueWaited, 600 );
+				} else {
+					this._waitingAsync = this.async( this._queueWaited, 5000 );
+				}
+			}
+
+			_queueWaited() {
+				this._queueClose();
+			}
+
+
+			_queueClose() {
+				this.close();
+
+				this._closingAsync = this.async( this._queueClosed, 200 );
+			}
+
+			_queueClosed() {
+				if( this.queue.length != 0 ) {
+					this._queueOpen();
+				} else {
+					this.set( '_running', false );
+				}
 			}
 		}
 

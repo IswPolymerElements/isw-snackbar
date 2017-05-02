@@ -30,6 +30,7 @@
 	<template>
 		<style>
 			:host {
+				@apply --layout-fit;
 				font-family: 'Roboto', 'Noto', sans-serif;
 				line-height: 1.5;
 				background-color: #FFFFFF;
@@ -113,7 +114,7 @@
 
 		</app-drawer-layout>
 
-		<isw-snackbar device="[[device]]"></isw-snackbar>
+		<isw-snackbar id="snackbar" device="[[device]]"></isw-snackbar>
 
 	</template>
 
