@@ -23,5 +23,8 @@
   },
   "resolutions": {
     "polymer": "^2.0.0-rc.2"
+  },
+  "demos": {
+    "Demo": "demo/index.html"
   }
 }
