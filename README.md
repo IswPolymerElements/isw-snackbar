@@ -2,37 +2,38 @@
 
 Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-control.
 
-## Install the Polymer-CLI
+Place your snackbar somewhere save from stacking-context issues, and access it over a remote element in your view.
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
+The snackbar can be switched between "mobile" and "tablet" / "desktop" styling via `device` and responsive gets with isw-responsive-behavior.
 
-## Viewing Your Application
+An open call to an allready opened snackbar closes and opens it again, multiple calls are queued.
 
-```
-$ polymer serve
-```
+Only one snackbar is needed, e.g. placed in the app.
 
-## Building Your Application
-
-```
-$ polymer build
+```html
+<isw-snackbar device="tablet"></isw-snackbar>
 ```
 
-This will create a `build/` folder with `bundled/` and `unbundled/` sub-folders
-containing a bundled (Vulcanized) and unbundled builds, both run through HTML,
-CSS, and JS optimizers.
+It can be accessed from multiple remotes. 
 
-You can serve the built versions by giving `polymer serve` a folder to serve
-from:
-
-```
-$ polymer serve build/bundled
-```
-
-## Running Tests
-
-```
-$ polymer test
+```html
+<isw-snackbar-remote
+    id="firstSnackbar"
+    message="My First Snackbar"
+    duration="5000">
+</isw-dialog-remote>
+<isw-snackbar-remote
+    id="secondSnackbar"
+    message="My Second Snackbar"
+    duration="2000">
+</isw-dialog-remote>
 ```
 
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+```javascript
+openFirstSnackbar() {
+  this.$.firstSnackbar.open();
+}
+openSecondSnackbar() {
+  this.$.secondSnackbar.open();
+}
+```
