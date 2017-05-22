@@ -3,26 +3,25 @@
   "description": "Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-control.",
   "main": "isw-snackbar.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0-rc.2",
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0-preview",
-    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#2.0-preview"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.0",
+    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#^2.0.0"
   },
   "devDependencies": {
-    "iron-component-page": "PolymerElements/iron-component-page#2.0-preview",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0-preview",
-    "web-component-tester": "v6.0.0-prerelease.5",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.5",
-    "app-layout": "PolymerElements/app-layout#2.0-preview",
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0-preview",
-    "paper-button": "PolymerElements/paper-button#2.0-preview",
-    "iron-icons": "PolymerElements/iron-icons#2.0-preview",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
+    "app-layout": "PolymerElements/app-layout#^2.0.0",
+    "paper-button": "PolymerElements/paper-button#^2.0.0",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^2.0.0",
+    "iron-icons": "PolymerElements/iron-icons#^2.0.0",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.0",
     "isw-toolbar": "IswPolymerElements/isw-toolbar#^1.0.5",
     "isw-footer-button-area": "IswPolymerElements/isw-footer-button-area#^1.0.2",
-    "isw-responsive-behavior": "IswPolymerElements/isw-responsive-behavior#^1.0.2",
-    "paper-icon-button": "PolymerElements/paper-icon-button#2.0-preview"
+    "isw-responsive-behavior": "IswPolymerElements/isw-responsive-behavior#^1.0.2"
   },
   "resolutions": {
-    "polymer": "^2.0.0-rc.2"
+    "polymer": "^2.0.0"
   },
   "demos": {
     "Demo": "demo/index.html"
