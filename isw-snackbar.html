@@ -62,11 +62,12 @@ It can be accessed from multiple remotes.
 				min-width: 100%;
 				min-height: 48px;
 				padding: 14px 0;
-				background: #323232;
+				background: var(--dark-theme-background-color, #323232);
 				bottom: var(--snackbar-hidden-bottom);
 				color: var(--dark-theme-text-color);
 				animation-name: close;
 				animation-duration: 0.2s;
+				@apply --snackbar-container;
 			}
 
 			@keyframes close {
@@ -101,12 +102,14 @@ It can be accessed from multiple remotes.
 			#message {
 				margin: 0 24px;
 				font-size: 14px;
+				@apply --snackbar-message-container;
 			}
 		</style>
 
 		<div id="snackbar">
 			<div id="message">
 				<span>[[message]]</span>
+				<slot></slot>
 			</div>
 		</div>
 	</template>
@@ -166,6 +169,14 @@ It can be accessed from multiple remotes.
 				document.addEventListener( 'isw-snackbar-open', e => this._remoteOpen( e ) );
 			}
 
+			queueClose() {
+				if( this._waitingAsync !== null ) {
+					this.cancelAsync( this._waitingAsync );
+					this._waitingAsync = null;
+					this._queueClose();
+				}
+			}
+
 			_remoteOpen( event ) {
 				// Add new message from remote to queue.
 				this.push( 'queue', event.detail );
@@ -173,10 +184,8 @@ It can be accessed from multiple remotes.
 				if( !this._running ) {
 					this.set( '_running', true );
 					this._queueOpen();
-				} else if( this._waitingAsync !== null ) {
-					this.cancelAsync( this._waitingAsync );
-					this._waitingAsync = null;
-					this._queueClose();
+				} else {
+					this.queueClose();
 				}
 			}
 

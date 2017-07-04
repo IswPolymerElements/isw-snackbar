@@ -36,6 +36,12 @@
 				background-color: #FFFFFF;
 				--primary-color: #00508C;
 				--accent-color: var(--paper-light-green-500);
+				--snackbar-message-container: {
+					width: 100%;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+				};
 			}
 
 			#drawer {
@@ -118,7 +124,9 @@
 
 		</app-drawer-layout>
 
-		<isw-snackbar id="snackbar" device="[[device]]"></isw-snackbar>
+		<isw-snackbar id="snackbar" device="[[device]]">
+			<paper-button on-tap="_close">Close</paper-button>
+		</isw-snackbar>
 
 	</template>
 
@@ -154,6 +162,10 @@
 						default:
 							this.set( 'drawerForceNarrow', true );
 					}
+				}
+
+				_close() {
+					this.$.snackbar.queueClose();
 				}
 
 				_snackbarA() {
