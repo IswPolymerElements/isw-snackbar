@@ -177,7 +177,8 @@ It can be accessed from multiple remotes.
 					_running: {
 						type: Boolean,
 						value: false
-					}
+					},
+					_activeSnackId: Number,
 				};
 			}
 
@@ -188,6 +189,17 @@ It can be accessed from multiple remotes.
 
 				// Listen to remote 'isw-snackbar-action' events.
 				document.addEventListener( 'isw-snackbar-open', e => this._remoteOpen( e ) );
+				document.addEventListener( 'isw-snackbar-close', ({detail}) => {
+					const id = detail.id;
+					if (this._activeSnackId === id) {
+						this.queueClose();
+					} else {
+						const idx = this.queue.findIndex(snack => snack.id === id);
+						if (idx >= 0) {
+							this.splice( 'queue', idx, 1 );
+						}
+					}
+				});
 			}
 
 			queueClose() {
@@ -215,17 +227,15 @@ It can be accessed from multiple remotes.
 			 * Open next message from queue.
 			 */
 			_queueOpen() {
-				const detail = this.queue[ 0 ];
+				const detail = this.shift( 'queue' );
 
 				// Set message, action and duration
 				this.setProperties({
 					message: detail.message,
 					duration: detail.duration,
 					action: detail.action,
+					_activeSnackId: detail.id,
 				});
-
-				// Remove now shown message from queue.
-				this.shift( 'queue' );
 
 				// Update styles.
 				if (this._originalProperties) {

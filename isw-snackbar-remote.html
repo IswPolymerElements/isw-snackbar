@@ -10,6 +10,8 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 
 <dom-module id="isw-snackbar-remote">
 	<script>
+	(function() {
+		let snackId = 1;
 		class IswSnackbarRemote extends IswSnackbarCssPropertiesMixin(Polymer.Element) {
 			static get is() {
 				return 'isw-snackbar-remote';
@@ -27,6 +29,10 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 						value: 3000
 					},
 					actionButton: String,
+					snackId: {
+						type: Number,
+						value() { return snackId++; },
+					},
 					_action: {
 						type: Object,
 						computed: '_computeAction(actionButton)',
@@ -34,10 +40,20 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 				};
 			}
 
+			disconnectedCallback() {
+				this.close();
+			}
+
 			open() {
 				document.dispatchEvent( new CustomEvent( 'isw-snackbar-open', { detail: {
-					message: this.message, duration: this.duration,
+					message: this.message, duration: this.duration, id: this.snackId,
 					action: this._action, cssProperties: this.getSnackbarCssProperties(),
+				} } ) );
+			}
+
+			close() {
+				document.dispatchEvent( new CustomEvent( 'isw-snackbar-close', { detail: {
+					id: this.snackId,
 				} } ) );
 			}
 
@@ -49,5 +65,6 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 		}
 
 		window.customElements.define( IswSnackbarRemote.is, IswSnackbarRemote );
+	})();
 	</script>
 </dom-module>
