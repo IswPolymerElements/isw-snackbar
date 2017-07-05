@@ -37,10 +37,6 @@
 				--primary-color: #00508C;
 				--accent-color: var(--paper-light-green-500);
 				--snackbar-message-container: {
-					width: 100%;
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
 				};
 			}
 
@@ -108,11 +104,13 @@
 					<paper-button raised on-tap="_snackbarB">Snackbar B</paper-button>
 					<paper-button raised on-tap="_snackbarTwoLine">Snackbar Two Line</paper-button>
 					<paper-button raised on-tap="_snackbarDuration">Snackbar Duration</paper-button>
+					<paper-button raised on-tap="_snackbarAction">Snackbar Action</paper-button>
 
 					<isw-snackbar-remote id="snackbarA" message="Snackbar Test A"></isw-snackbar-remote>
 					<isw-snackbar-remote id="snackbarB" message="Snackbar Test B"></isw-snackbar-remote>
 					<isw-snackbar-remote id="snackbarTwoLine" message="Snackbar Test Lorem ipsum dolor sit amet, consetetur sadipscing elitr"></isw-snackbar-remote>
 					<isw-snackbar-remote id="snackbarDuration" message="Snackbar Test 10 seconds." duration="10000"></isw-snackbar-remote>
+					<isw-snackbar-remote id="snackbarAction" duration="100000000" message="Snackbar Test action" action-button="Say Hello" on-action-tap="_saidHello"></isw-snackbar-remote>
 
 				</div>
 
@@ -124,9 +122,7 @@
 
 		</app-drawer-layout>
 
-		<isw-snackbar id="snackbar" device="[[device]]">
-			<paper-button on-tap="_close">Close</paper-button>
-		</isw-snackbar>
+		<isw-snackbar id="snackbar" device="[[device]]"></isw-snackbar>
 
 	</template>
 
@@ -182,6 +178,14 @@
 
 				_snackbarDuration() {
 					this.$.snackbarDuration.open();
+				}
+
+				_snackbarAction() {
+					this.$.snackbarAction.open();
+				}
+
+				_saidHello(e) {
+					console.info('Said hello!', e);
 				}
 
 			}

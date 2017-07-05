@@ -59,9 +59,11 @@ It can be accessed from multiple remotes.
 				@apply --layout-center;
 				position: absolute;
 				box-sizing: border-box;
+				display: flex;
+				align-items: stretch;
+				justify-content: center;
 				min-width: 100%;
 				min-height: 48px;
-				padding: 14px 0;
 				background: var(--dark-theme-background-color, #323232);
 				bottom: var(--snackbar-hidden-bottom);
 				color: var(--dark-theme-text-color);
@@ -102,14 +104,26 @@ It can be accessed from multiple remotes.
 			#message {
 				margin: 0 24px;
 				font-size: 14px;
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
 				@apply --snackbar-message-container;
+			}
+
+			paper-button {
+				margin-right: 0;
 			}
 		</style>
 
 		<div id="snackbar">
 			<div id="message">
 				<span>[[message]]</span>
-				<slot></slot>
+				<dom-if if="[[action]]">
+					<template>
+						<paper-button on-tap="_notifyTap">[[action.message]]</paper-button>
+					</template>
+				</dom-if>
 			</div>
 		</div>
 	</template>
@@ -130,6 +144,7 @@ It can be accessed from multiple remotes.
 						type: Number,
 						notify: true
 					},
+					action: Object,
 					queue: {
 						type: Array,
 						value: []
@@ -194,17 +209,22 @@ It can be accessed from multiple remotes.
 			 * Open next message from queue.
 			 */
 			_queueOpen() {
-				// Set message and duration.
-				this.set( 'message', this.queue[ 0 ].message );
-				this.set( 'duration', this.queue[ 0 ].duration );
+				const detail = this.queue[ 0 ];
+
+				// Set message, action and duration
+				this.setProperties({
+					message: detail.message,
+					duration: detail.duration,
+					action: detail.action,
+				});
+
+				// Remove now shown message from queue.
+				this.shift( 'queue' );
 
 				// Update styles.
 				this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
 				this.updateStyles( { '--snackbar-height': this.$.snackbar.offsetHeight + 'px' } );
 				this.updateStyles( { '--snackbar-width': this.$.snackbar.offsetWidth + 'px' } );
-
-				// Remove now shown message from queue.
-				this.shift( 'queue' );
 
 				// Open the overlay.
 				this.open();
@@ -217,6 +237,7 @@ It can be accessed from multiple remotes.
 			 * Message opening finished.
 			 */
 			_queueOpened() {
+
 				// Start waiting.
 				this._queueWait();
 			}
@@ -272,6 +293,10 @@ It can be accessed from multiple remotes.
 				} else {
 					this.set( '_running', false );
 				}
+			}
+
+			_notifyTap( e ) {
+				this.action.handler( e );
 			}
 		}
 
