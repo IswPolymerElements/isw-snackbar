@@ -36,8 +36,6 @@
 				background-color: #FFFFFF;
 				--primary-color: #00508C;
 				--accent-color: var(--paper-light-green-500);
-				--snackbar-message-container: {
-				};
 			}
 
 			#drawer {
@@ -54,6 +52,12 @@
 				@apply --layout-flex;
 				@apply --layout-scroll;
 				padding: 40px 80px;
+			}
+
+			#snackbarAction {
+				--isw-snackbar-background: var(--primary-color);
+				--isw-snackbar-text-color: var(--paper-red-300);
+				--isw-snackbar-action-color: var(--accent-color);
 			}
 
 			:host([device="mobile"]) #content {
@@ -104,13 +108,13 @@
 					<paper-button raised on-tap="_snackbarB">Snackbar B</paper-button>
 					<paper-button raised on-tap="_snackbarTwoLine">Snackbar Two Line</paper-button>
 					<paper-button raised on-tap="_snackbarDuration">Snackbar Duration</paper-button>
-					<paper-button raised on-tap="_snackbarAction">Snackbar Action</paper-button>
+					<paper-button raised on-tap="_snackbarAction">Styled Snackbar Action</paper-button>
 
 					<isw-snackbar-remote id="snackbarA" message="Snackbar Test A"></isw-snackbar-remote>
 					<isw-snackbar-remote id="snackbarB" message="Snackbar Test B"></isw-snackbar-remote>
 					<isw-snackbar-remote id="snackbarTwoLine" message="Snackbar Test Lorem ipsum dolor sit amet, consetetur sadipscing elitr"></isw-snackbar-remote>
 					<isw-snackbar-remote id="snackbarDuration" message="Snackbar Test 10 seconds." duration="10000"></isw-snackbar-remote>
-					<isw-snackbar-remote id="snackbarAction" duration="100000000" message="Snackbar Test action" action-button="Say Hello" on-action-tap="_saidHello"></isw-snackbar-remote>
+					<isw-snackbar-remote id="snackbarAction" message="Snackbar Test styled action" action-button="Say Hello (to console)" on-action-tap="_saidHello"></isw-snackbar-remote>
 
 				</div>
 

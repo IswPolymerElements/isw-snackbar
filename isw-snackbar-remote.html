@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="./isw-snackbar-css-properties-mixin.html">
 
 <!--
 `isw-snackbar`
@@ -9,7 +10,7 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 
 <dom-module id="isw-snackbar-remote">
 	<script>
-		class IswSnackbarRemote extends Polymer.Element {
+		class IswSnackbarRemote extends IswSnackbarCssPropertiesMixin(Polymer.Element) {
 			static get is() {
 				return 'isw-snackbar-remote';
 			}
@@ -35,7 +36,8 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 
 			open() {
 				document.dispatchEvent( new CustomEvent( 'isw-snackbar-open', { detail: {
-					message: this.message, duration: this.duration, action: this._action,
+					message: this.message, duration: this.duration,
+					action: this._action, cssProperties: this.getSnackbarCssProperties(),
 				} } ) );
 			}
 

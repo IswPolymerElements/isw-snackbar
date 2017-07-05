@@ -3,6 +3,8 @@
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
 
+<link rel="import" href="./isw-snackbar-css-properties-mixin.html">
+
 <!--
 `isw-snackbar`
 Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-control.
@@ -52,6 +54,9 @@ It can be accessed from multiple remotes.
 				right: 0;
 				height: var(--snackbar-height);
 				overflow: hidden;
+				--isw-snackbar-text-color: var(--dark-theme-text-color, #FFF);
+				--isw-snackbar-background: var(--dark-theme-background-color, #323232);
+				--isw-snackbar-action-color: var(--isw-snackbar-text-color);
 			}
 
 			#snackbar {
@@ -64,9 +69,9 @@ It can be accessed from multiple remotes.
 				justify-content: center;
 				min-width: 100%;
 				min-height: 48px;
-				background: var(--dark-theme-background-color, #323232);
+				background: var(--isw-snackbar-background);
 				bottom: var(--snackbar-hidden-bottom);
-				color: var(--dark-theme-text-color);
+				color: var(--isw-snackbar-text-color);
 				animation-name: close;
 				animation-duration: 0.2s;
 				@apply --snackbar-container;
@@ -113,6 +118,7 @@ It can be accessed from multiple remotes.
 
 			paper-button {
 				margin-right: 0;
+				color: var(--isw-snackbar-action-color);
 			}
 		</style>
 
@@ -129,7 +135,7 @@ It can be accessed from multiple remotes.
 	</template>
 
 	<script>
-		class IswSnackbar extends Polymer.mixinBehaviors( [ Polymer.IronOverlayBehavior ], Polymer.Element ) {
+		class IswSnackbar extends Polymer.mixinBehaviors( [ Polymer.IronOverlayBehavior ], IswSnackbarCssPropertiesMixin(Polymer.Element) ) {
 			static get is() {
 				return 'isw-snackbar';
 			}
@@ -222,15 +228,26 @@ It can be accessed from multiple remotes.
 				this.shift( 'queue' );
 
 				// Update styles.
-				this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
-				this.updateStyles( { '--snackbar-height': this.$.snackbar.offsetHeight + 'px' } );
-				this.updateStyles( { '--snackbar-width': this.$.snackbar.offsetWidth + 'px' } );
+				if (this._originalProperties) {
+					// New snackbar may have some the properties missing,
+					// so we revert to original values
+					this.updateStyles(this._originalProperties);
+				}
+				this._originalProperties = this.getSnackbarCssProperties();
+				this.updateStyles(detail.cssProperties);
 
-				// Open the overlay.
-				this.open();
+				// Make sure DOM is already updated
+				this.async(function() {
+					this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
+					this.updateStyles( { '--snackbar-height': this.$.snackbar.offsetHeight + 'px' } );
+					this.updateStyles( { '--snackbar-width': this.$.snackbar.offsetWidth + 'px' } );
 
-				// Wait for openening animation.
-				this._openingAsync = this.async( this._queueOpened, 200 );
+					// Open the overlay.
+					this.open();
+
+					// Wait for openening animation.
+					this._openingAsync = this.async( this._queueOpened, 200 );
+				});
 			}
 
 			/**

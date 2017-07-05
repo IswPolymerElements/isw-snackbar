@@ -1,0 +1,27 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+IswSnackbarCssPropertiesMixin = Polymer.dedupingMixin(function(superClass) {
+  return class SolutionsElementMixin extends superClass {
+		getSnackbarCssProperties() {
+			return ['--isw-snackbar-background', '--isw-snackbar-text-color', '--isw-snackbar-action-color']
+			.map(name => ({
+				name, value: this._getCssProperty(name),
+			}))
+			.reduce((result, {name, value}) => {
+				if (value) {
+					result[name] = value;
+				}
+				return result;
+			}, {});
+		}
+
+		_getCssProperty(name) {
+			if (ShadyCSS) {
+			  return ShadyCSS.getComputedStyleValue(this, name);
+			}
+			return getComputedStyle(this, name);
+		}
+  }
+});
+</script>
