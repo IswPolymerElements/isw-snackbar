@@ -3,6 +3,8 @@
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
 
+<link rel="import" href="./isw-snackbar-css-properties-mixin.html">
+
 <!--
 `isw-snackbar`
 Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-control.
@@ -52,6 +54,9 @@ It can be accessed from multiple remotes.
 				right: 0;
 				height: var(--snackbar-height);
 				overflow: hidden;
+				--isw-snackbar-text-color: var(--dark-theme-text-color, #FFF);
+				--isw-snackbar-background: var(--dark-theme-background-color, #323232);
+				--isw-snackbar-action-color: var(--isw-snackbar-text-color);
 			}
 
 			#snackbar {
@@ -59,14 +64,17 @@ It can be accessed from multiple remotes.
 				@apply --layout-center;
 				position: absolute;
 				box-sizing: border-box;
+				display: flex;
+				align-items: stretch;
+				justify-content: center;
 				min-width: 100%;
 				min-height: 48px;
-				padding: 14px 0;
-				background: #323232;
+				background: var(--isw-snackbar-background);
 				bottom: var(--snackbar-hidden-bottom);
-				color: var(--dark-theme-text-color);
+				color: var(--isw-snackbar-text-color);
 				animation-name: close;
 				animation-duration: 0.2s;
+				@apply --snackbar-container;
 			}
 
 			@keyframes close {
@@ -101,18 +109,37 @@ It can be accessed from multiple remotes.
 			#message {
 				margin: 0 24px;
 				font-size: 14px;
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				@apply --snackbar-message-container;
+			}
+			
+			#message > span {
+				@apply --snackbar-message-container-inner;
+			}
+
+			paper-button {
+				margin-right: 0;
+				color: var(--isw-snackbar-action-color);
 			}
 		</style>
 
 		<div id="snackbar">
 			<div id="message">
 				<span>[[message]]</span>
+				<dom-if if="[[action]]">
+					<template>
+						<paper-button on-tap="_notifyTap">[[action.message]]</paper-button>
+					</template>
+				</dom-if>
 			</div>
 		</div>
 	</template>
 
 	<script>
-		class IswSnackbar extends Polymer.mixinBehaviors( [ Polymer.IronOverlayBehavior ], Polymer.Element ) {
+		class IswSnackbar extends Polymer.mixinBehaviors( [ Polymer.IronOverlayBehavior ], IswSnackbarCssPropertiesMixin(Polymer.Element) ) {
 			static get is() {
 				return 'isw-snackbar';
 			}
@@ -127,6 +154,7 @@ It can be accessed from multiple remotes.
 						type: Number,
 						notify: true
 					},
+					action: Object,
 					queue: {
 						type: Array,
 						value: []
@@ -153,7 +181,8 @@ It can be accessed from multiple remotes.
 					_running: {
 						type: Boolean,
 						value: false
-					}
+					},
+					_activeSnackId: Number,
 				};
 			}
 
@@ -164,6 +193,25 @@ It can be accessed from multiple remotes.
 
 				// Listen to remote 'isw-snackbar-action' events.
 				document.addEventListener( 'isw-snackbar-open', e => this._remoteOpen( e ) );
+				document.addEventListener( 'isw-snackbar-close', ({detail}) => {
+					const id = detail.id;
+					if (this._activeSnackId === id) {
+						this.queueClose();
+					} else {
+						const idx = this.queue.findIndex(snack => snack.id === id);
+						if (idx >= 0) {
+							this.splice( 'queue', idx, 1 );
+						}
+					}
+				});
+			}
+
+			queueClose() {
+				if( this._waitingAsync !== null ) {
+					this.cancelAsync( this._waitingAsync );
+					this._waitingAsync = null;
+					this._queueClose();
+				}
 			}
 
 			_remoteOpen( event ) {
@@ -173,10 +221,8 @@ It can be accessed from multiple remotes.
 				if( !this._running ) {
 					this.set( '_running', true );
 					this._queueOpen();
-				} else if( this._waitingAsync !== null ) {
-					this.cancelAsync( this._waitingAsync );
-					this._waitingAsync = null;
-					this._queueClose();
+				} else {
+					this.queueClose();
 				}
 			}
 
@@ -185,29 +231,44 @@ It can be accessed from multiple remotes.
 			 * Open next message from queue.
 			 */
 			_queueOpen() {
-				// Set message and duration.
-				this.set( 'message', this.queue[ 0 ].message );
-				this.set( 'duration', this.queue[ 0 ].duration );
+				const detail = this.shift( 'queue' );
+
+				// Set message, action and duration
+				this.setProperties({
+					message: detail.message,
+					duration: detail.duration,
+					action: detail.action,
+					_activeSnackId: detail.id,
+				});
 
 				// Update styles.
-				this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
-				this.updateStyles( { '--snackbar-height': this.$.snackbar.offsetHeight + 'px' } );
-				this.updateStyles( { '--snackbar-width': this.$.snackbar.offsetWidth + 'px' } );
+				if (this._originalProperties) {
+					// New snackbar may have some the properties missing,
+					// so we revert to original values
+					this.updateStyles(this._originalProperties);
+				}
+				this._originalProperties = this.getSnackbarCssProperties();
+				this.updateStyles(detail.cssProperties);
 
-				// Remove now shown message from queue.
-				this.shift( 'queue' );
+				// Make sure DOM is already updated
+				this.async(function() {
+					this.updateStyles( { '--snackbar-hidden-bottom': '-' + this.$.snackbar.offsetHeight + 'px' } );
+					this.updateStyles( { '--snackbar-height': this.$.snackbar.offsetHeight + 'px' } );
+					this.updateStyles( { '--snackbar-width': this.$.snackbar.offsetWidth + 'px' } );
 
-				// Open the overlay.
-				this.open();
+					// Open the overlay.
+					this.open();
 
-				// Wait for openening animation.
-				this._openingAsync = this.async( this._queueOpened, 200 );
+					// Wait for openening animation.
+					this._openingAsync = this.async( this._queueOpened, 200 );
+				});
 			}
 
 			/**
 			 * Message opening finished.
 			 */
 			_queueOpened() {
+
 				// Start waiting.
 				this._queueWait();
 			}
@@ -263,6 +324,10 @@ It can be accessed from multiple remotes.
 				} else {
 					this.set( '_running', false );
 				}
+			}
+
+			_notifyTap( e ) {
+				this.action.handler( e );
 			}
 		}
 

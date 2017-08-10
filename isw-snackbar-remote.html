@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="./isw-snackbar-css-properties-mixin.html">
 
 <!--
 `isw-snackbar`
@@ -9,7 +10,9 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 
 <dom-module id="isw-snackbar-remote">
 	<script>
-		class IswSnackbarRemote extends Polymer.Element {
+	(function() {
+		let snackId = 1;
+		class IswSnackbarRemote extends IswSnackbarCssPropertiesMixin(Polymer.Element) {
 			static get is() {
 				return 'isw-snackbar-remote';
 			}
@@ -24,15 +27,44 @@ Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-
 						type: Number,
 						notify: true,
 						value: 3000
-					}
+					},
+					actionButton: String,
+					snackId: {
+						type: Number,
+						value() { return snackId++; },
+					},
+					_action: {
+						type: Object,
+						computed: '_computeAction(actionButton)',
+					},
 				};
 			}
 
+			disconnectedCallback() {
+				this.close();
+			}
+
 			open() {
-				document.dispatchEvent( new CustomEvent( 'isw-snackbar-open', { detail: { message: this.message, duration: this.duration } } ) );
+				document.dispatchEvent( new CustomEvent( 'isw-snackbar-open', { detail: {
+					message: this.message, duration: this.duration, id: this.snackId,
+					action: this._action, cssProperties: this.getSnackbarCssProperties(),
+				} } ) );
+			}
+
+			close() {
+				document.dispatchEvent( new CustomEvent( 'isw-snackbar-close', { detail: {
+					id: this.snackId,
+				} } ) );
+			}
+
+			_computeAction(message) {
+				if (!message) return;
+				const handler = () => this.dispatchEvent( new Event( 'action-tap' ) );
+				return { message, handler };
 			}
 		}
 
 		window.customElements.define( IswSnackbarRemote.is, IswSnackbarRemote );
+	})();
 	</script>
 </dom-module>
