@@ -3,6 +3,8 @@
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
 
+<link rel="import" href="../isw-responsive/isw-responsive-behavior.html">
+
 <!--
 `isw-snackbar`
 Material Design Polymer 2.0 Snackbar / Toast, stacking context safe with remote-control.
@@ -112,7 +114,7 @@ It can be accessed from multiple remotes.
 	</template>
 
 	<script>
-		class IswSnackbar extends Polymer.mixinBehaviors( [ Polymer.IronOverlayBehavior ], Polymer.Element ) {
+		class IswSnackbar extends Polymer.mixinBehaviors( [ Polymer.IronOverlayBehavior, iswResponsiveBehavior ], Polymer.Element ) {
 			static get is() {
 				return 'isw-snackbar';
 			}
@@ -139,16 +141,6 @@ It can be accessed from multiple remotes.
 						notify: true,
 						reflectToAttribute: true,
 						value: false
-					},
-					/**
-					 * The device metrics that should be used. Either "mobile", "tablet" or "desktop".
-					 * Combine with isw-responsive-behavior for a responsive snackbar.
-					 */
-					device: {
-						type: String,
-						notify: true,
-						reflectToAttribute: true,
-						value: 'mobile'
 					},
 					_running: {
 						type: Boolean,

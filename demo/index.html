@@ -18,7 +18,8 @@
 	<link rel="import" href="../../paper-styles/paper-styles.html">
 
 	<link rel="import" href="../../isw-footer-button-area/isw-footer-button-area.html">
-	<link rel="import" href="../../isw-responsive-behavior/isw-responsive-behavior.html">
+	<link rel="import" href="../../isw-responsive/isw-responsive.html">
+	<link rel="import" href="../../isw-responsive/isw-responsive-behavior.html">
 	<link rel="import" href="../../isw-toolbar/isw-toolbar.html">
 
 	<link rel="import" href="../isw-snackbar.html">
@@ -82,6 +83,10 @@
 			}
 		</style>
 
+		<isw-responsive device="{{device}}"
+				orientation="{{orientation}}"
+				on-screen-changed="_screenChanged"></isw-responsive>
+
 		<app-drawer-layout responsive-width="0" force-narrow="[[drawerForceNarrow]]" fullbleed>
 
 			<app-drawer slot="drawer">
@@ -139,9 +144,7 @@
 					}
 				}
 
-				onResize() {
-					super.onResize();
-
+				_screenChanged() {
 					switch( this.device ) {
 						case 'desktop':
 							this.set( 'drawerForceNarrow', false );
