@@ -36,7 +36,7 @@ openSecondSnackbar() {
 }
 ```
 
-The element uses the isw-responsive-behavior, so its appearance can be controlled by setting the device attribute...
+The element uses the `isw-responsive-behavior`, so its appearance can be controlled by setting the device attribute...
 
 ```html
 <isw-snackbar device="mobile"></isw-snackbar>
@@ -46,7 +46,7 @@ The element uses the isw-responsive-behavior, so its appearance can be controlle
 <isw-snackbar device="tablet"></isw-snackbar>
 ```
 
-... or get responsive by combining with <isw-responsive>
+... or get responsive by combining with `isw-responsive`
 
 ```html
 <isw-responsive
